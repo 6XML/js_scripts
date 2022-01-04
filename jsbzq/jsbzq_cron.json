@@ -10,7 +10,7 @@
       "time": "13 8 * * *",
       "job": {
         "type": "runjs",
-        "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbqd_cron.js"
+        "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbqd.js"
       }
     },
     {
