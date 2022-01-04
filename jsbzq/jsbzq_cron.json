@@ -1,0 +1,39 @@
+{
+  "name": "中青看点极速版定时任务订阅",
+  "desc": "无",
+  "date": "2022-01-04 16:32:08",
+  "resource": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbzq_cron.js",
+  "list": [
+    {
+      "name": "中青极速版签到",
+      "type": "cron",
+      "time": "13 8 * * *",
+      "job": {
+        "type": "runjs",
+        "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbqd_cron.js"
+      }
+    },
+    {
+      "name": "中青极速版文章",
+      "type": "cron",
+      "time": "30 9,18 * * *",
+      "running": true,
+      "job": {
+        "type": "runjs",
+        "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbwz.js"
+      }
+    },
+    {
+     "name": "中青极速版看看赚",
+      "type": "cron",
+      "time": "45 10,21 * * *",
+      "running": true,
+      "job": {
+        "type": "runjs",
+        "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbkkz.js"
+      }
+    },
+    
+
+  ]
+}
