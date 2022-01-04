@@ -1,128 +1,200 @@
 /*
-中青看点极速版签到
+中青看点速版看看赚
 app下载复制到浏览器打开：https://user.youth.cn/h5/fastAppWeb/invite/invite_ground.html?share_uid=1037553647&channel=c8000&nickname=abc&avatar=http%3A%2F%2Fres.youth.cn%2Favatar_202112_21_218_61c1ec86c1f6a1037553647x.jpg&v=1640453722
 (个人邀请链接)
 感谢赞赏！
 
 [rewrite_local]
 
-#签到
-https://user.youth.cn/FastApi/Task/sign.json 重写目标 https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbqd.js
+#看看赚
+https://user.youth.cn/v1/Nameless/adlickstart.json 重写目标 https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbkkz.js
+注:看看赚重写与文章重写冲突，使用时请关闭文章重写
 
 [MITM]
 
 hostname = user.youth.cn
 
 */
-const $ = new Env("中青看点极速版签到");
+const $ = new Env("中青极速版看看赚");
 const notify = $.isNode() ? require('./sendNotify') : '';
 message = ""
 
 
-let jsbtoken= $.isNode() ? (process.env.jsbtoken ? process.env.jsbtoken : "") : ($.getdata('jsbtoken') ? $.getdata('jsbtoken') : "")
-let jsbtokenArr = []
-let jsbtokens = ""
-const qdheader={
+let jsbzqkkz= $.isNode() ? (process.env.jsbzqkkz ? process.env.jsbzqkkz : "") : ($.getdata('jsbzqkkz') ? $.getdata('jsbzqkkz') : "")
+let jsbzqkkzArr = []
+let jsbzqkkzs = ""
+const header={
+    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+    'Content-Length': '408',
     'Host': 'user.youth.cn'
-};
+}
+
 
  if (typeof $request !== "undefined") {
-     getjsbtoken()
+     getjsbzqkkz()
      $.done()
  }
-if (jsbtoken) {
-    if (jsbtoken.indexOf("&") == -1) {
-        jsbtokenArr.push(jsbtoken)
-    } else if (jsbtoken.indexOf("&") > -1) {
-        jsbtokens = jsbtoken.split("&")
-    } else if (process.env.jsbtoken && process.env.jsbtoken.indexOf('&') > -1) {
-        jsbtokenArr = process.env.jsbtoken.split('&');
-        console.log(`您选择的是用"&"隔开\n`)
+if (jsbzqkkz) {
+    if (jsbzqkkz.indexOf("@") == -1) {
+        jsbzqkkzArr.push(jsbzqkkz)
+    } else if (jsbzqkkz.indexOf("@") > -1) {
+        jsbzqkkzs = jsbzqkkz.split("@")
+    } else if (process.env.jsbzqkkz && process.env.jsbzqkkz.indexOf('@') > -1) {
+        jsbzqkkzArr = process.env.jsbzqkkz.split('@');
+        console.log(`您选择的是用"@"隔开\n`)
     }
 } else if($.isNode()){
     var fs = require("fs");
-    jsbtoken = fs.readFileSync("jsbtoken.txt", "utf8");
-    if (jsbtoken !== `undefined`) {
-        jsbtokens = jsbtoken.split("\n");
+    jsbzqkkz = fs.readFileSync("jsbzqkkz.txt", "utf8");
+    if (jsbzqkkz !== `undefined`) {
+        jsbzqkkzs = jsbzqkkz.split("\n");
     } else {
-        $.msg($.name, '【提示】请签到以获取body，明天再跑一次脚本测试');
+        $.msg($.name, '【提示】请点击看看赚某一任务获取body', '不知道说啥好', {
+            "open-url": "给您劈个叉吧"
+        });
         $.done()
     }
 }
-
-Object.keys(jsbtokens).forEach((item) => {
-    if (jsbtokens[item] && !jsbtokens[item].startsWith("#")) {
-        jsbtokenArr.push(jsbtokens[item])
+Object.keys(jsbzqkkzs).forEach((item) => {
+    if (jsbzqkkzs[item] && !jsbzqkkzs[item].startsWith("#")) {
+        jsbzqkkzArr.push(jsbzqkkzs[item])
     }
 })
+
+
+
+
 
 !(async () => {
 
 
-        console.log(`共${jsbtokenArr.length}个账号`)
-	        for (let k = 0; k < jsbtokenArr.length; k++) {
+        console.log(`共${jsbzqkkzArr.length}个账号`)
+	        for (let k = 0; k < jsbzqkkzArr.length; k++) {
             $.message = ""
-            jsbtoken1 = jsbtokenArr[k];
-            console.log(`${jsbtoken1}`)
-            console.log(`--------账号 ${k+1} 签到任务执行中--------\n`)
-            await qd()
-                await $.wait(1000);
-            console.log("\n\n")
+            jsbzqkkz1 = jsbzqkkzArr[k];
+        
+            console.log(`--------第 ${k+1}个看看赚 执行中--------\n`)
+            await lookStart()
+                await $.wait(5000);
+            console.log("去领奖")
+            await $.wait(3000);
+            await reward()
+                    await $.wait(3000);
+                    
         }
-
-        date = new Date()
-        if ($.isNode() &&date.getHours() == 11 && date.getMinutes()<10) {
-            if (message.length != 0) {
-                   await notify.sendNotify("中青看点签到", `${message}\n\n `);
-            }
-        } else {
-            $.msg($.name, "",  message)
-        }
+        
 
     })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
 
-//获取签到token
-function getjsbtoken() {
-    if ($request.url.match(/\/user.youth.cn\/FastApi\/Task\/sign/)) {
-          jsbqdurl = $request.url
-          token = jsbqdurl.match(/token=(.*?)&/)
-        if (jsbtoken) {
-            if (jsbtoken.indexOf(token) > -1) {
-                $.log("此签到请求已存在，本次跳过")
-            } else if (jsbtoken.indexOf(token) == -1) {
-                jsbtokens = jsbtoken + "&" + token;
-                $.setdata(jsbtokens, 'jsbtoken');
-                $.log(`${$.name}获取签到: 成功, jsbtokens: ${token}`);
-                tokens = jsbtokens.split("&")
-                $.msg($.name, "获取第" + tokens.length + "个签到请求: 成功🎉", ``)
+//获取body
+async function getjsbzqkkz() {
+if ($request.url.match(/\/user.youth.cn\/v1\/Nameless\/adlickstart.json/)) {
+          bodyVal=$request.body
+          await $.wait(1100);
+        if (jsbzqkkz) {
+            if (jsbzqkkz.indexOf(bodyVal) > -1) {
+                $.log("此极速版看看赚任务请求已存在，本次跳过")
+            } else if (jsbzqkkz.indexOf(bodyVal) == -1) {
+                jsbzqkkzs = jsbzqkkz + "@" + bodyVal;
+                $.setdata(jsbzqkkzs, 'jsbzqkkz');
+                $.log(`${$.name}获取极速版看看赚任务: 成功, jsbzqkkzs: ${bodyVal}`);
+                bodys = jsbzqkkzs.split("@")
+                 $.msg($.name, "获取第" + bodys.length + "个极速版看看赚任务请求: 成功🎉", ``)
             }
         } else {
-            $.setdata(token, 'jsbtoken');
-            $.log(`${$.name}获取签到: 成功, jsbtokens: ${token}`);
-            $.msg($.name, `获取第一个签到请求: 成功🎉`, ``)
+            $.setdata(bodyVal, 'jsbzqkkz');
+            $.log(`${$.name}获取极速版看看赚任务: 成功, jsbzqkkzs: ${bodyVal}`);
+            $.msg($.name, `获取第一个极速版看看赚任务请求: 成功🎉`, ``)
         }
     }
 
   }
 
-//签到
-function qd(timeout = 0) {
+
+function lookStart(timeout = 0) {
     return new Promise((resolve) => {
         let url = {
-            url: `https://user.youth.cn/FastApi/Task/sign.json?token=${jsbtoken1}&app_version=2.5.5`,
-            headers: qdheader,
-            }
+            url : 'https://user.youth.cn/v1/Nameless/adlickstart.json',
+            headers : header,
+            body : jsbzqkkz1,}
         $.post(url, async (err, resp, data) => {
             try {
 
                 const result = JSON.parse(data)
-                if(result.success == true){
-                    console.log('\n签到成功，获得：'+result.items.score +'金币')
+                if(result.success === true ){
+                    console.log('\n激活看看赚任务成功')
+                    comstate = result.items.complete_state
+                    if(comstate === 1){
+                        console.log('\n任务: '+ result.items.banner_id+'已完成，跳过')
+                        await reward()
+                        await $.wait(3000);
+                    }else {
+                        $.log("任务开始，" + result.items.banner_id + result.message);
+                        for (let j = 0; j < result.items.see_num - result.items.read_num; j++) {
+                        $.log("任务执行第" + parseInt(j + 1) + "次")
+                        await $.wait(8000);
+                        await lookstart()
+                    }
+                        await $.wait(10000);
+                    
+                    }
+
                 }else{
-                    console.log('\n今日已签到，明天再来吧^_^')
+                    console.log('\n激活看看赚任务失败')
+                    smbody = $.getdata('jsbzqkkz').replace(jsbzqkkz1 + "&", "");
+                    $.setdata(smbody, 'jsbzqkkz');
+                    console.log("该看看赚任务已自动删除")
+                }
+            } catch (e) {
+            } finally {
+                resolve()
+            }
+            },timeout)
+    })
+}
+//阅读
+function lookstart(timeout = 0) {
+    return new Promise((resolve) => {
+        let url = {
+            url : 'https://user.youth.cn/v1/Nameless/bannerstatus.json',
+            headers : header,
+            body : jsbzqkkz1,}
+        $.post(url, async (err, resp, data) => {
+            try {
+
+                const result = JSON.parse(data)
+                if(result.success === true ){
+                    console.log('\n浏览极速版看看赚文章成功')
+                }else {
+                    console.log('\n浏览极速版看看赚文章失败')
+                }
+
+            } catch (e) {
+            } finally {
+                resolve()
+            }
+            },timeout)
+    })
+}
+
+//奖励
+function reward(timeout = 0) {
+    return new Promise((resolve) => {
+        let url = {
+            url : 'https://user.youth.cn/v1/Nameless/adlickend.json',
+            headers : header,
+            body : jsbzqkkz1,}
+        $.post(url, async (err, resp, data) => {
+            try {
+
+                const result = JSON.parse(data)
+                if(result.success == true ){
+                    console.log('\n看看赚获得：'+result.items.score + '金币')
+                }else{
+                    console.log('\n领取奖励失败')
                 }
             } catch (e) {
             } finally {

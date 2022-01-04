@@ -1,0 +1,27 @@
+{
+  "name": "中青极速版重写订阅",
+  "author": "elecV2p",
+  "mitmhost": ["user.youth.cn"],
+  "rewrite": [
+    {
+      "match": "https://user.youth.cn/FastApi/Task/sign.json",
+      "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbqd.js",
+      "enable": true
+    },
+    {
+      "match": "https://user.youth.cn/v1/Nameless/adlickstart.json",
+      "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbkkz.js",
+      "enable": true
+    },
+    {
+      "match": "https://user.youth.cn/v1/article/detail.json",
+      "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbwz.js",
+      "enable": true
+    }, 
+    {
+      "match": "https://user.youth.cn/v",
+      "target": "https://raw.githubusercontent.com/6XML/js_scripts/main/jsbzq/jsbwz.js",
+      "enable": true
+    }, 
+  ]
+}
